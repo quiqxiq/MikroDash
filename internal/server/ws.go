@@ -1220,6 +1220,12 @@ func (cn *conn) resumePage(page string) {
 			replay.TS = time.Now().UnixMilli()
 			collect.EvPppUpdate.Send(cn.srv.hub, cn.c, replay)
 		}
+	case "hotspot":
+		if last := cn.rsession.Hotspot().Last(); last != nil {
+			replay := *last
+			replay.TS = time.Now().UnixMilli()
+			collect.EvHotspotUpdate.Send(cn.srv.hub, cn.c, replay)
+		}
 	case "vpn":
 		if last := cn.rsession.VPN().Last(); last != nil {
 			replay := *last

@@ -99,9 +99,9 @@ wanted at once; across seven pages on 2026-09-10 no menu had two.
 
 ### Table collectors: one lifecycle
 
-**Fifteen collectors are plain tables**: one subscription whose cadence is simply
+**Sixteen collectors are plain tables**: one subscription whose cadence is simply
 "this table was read". They are `arp`, `bridges`, `capsman`, `dhcpLeases`,
-`dhcpNetworks`, `dns`, `netwatch`, `packages`, `ppp`, `queues`,
+`dhcpNetworks`, `dns`, `hotspot`, `netwatch`, `packages`, `ppp`, `queues`,
 `rosusers`, `routing`, `system`, `talkers` and `wan`. Each embeds `tableCore`
 (`internal/collect/table.go`) and declares only what differs:
 
@@ -477,6 +477,7 @@ the rooms it emits to, and `-` means router-wide or nothing.
 | `dhcpNetworks` | `/ip/dhcp-server/network/print` | `BuildLanOverview` | `page-dhcp`, `dash-card-network` |
 | `dns` | `/ip/dns/print` | `ParseDNSSettings`, `ParseStaticEntries` | `page-dns` |
 | `firewall` | the table on screen | `BuildFirewallRule` | `page-firewall`, `dash-card-firewall` |
+| `hotspot` | `/ip/hotspot/active/print` | `ParseHotspotActive`, `BuildHotspot` | `page-hotspot` |
 | `ifStatus` | `/interface/print` | `BuildIfStatus` | `page-interfaces`, `page-network-topology`, `dash-card-physports` |
 | `logs` | - `/log/listen` | fold: `FoldLog` | `page-logs`, `dash-card-logs` |
 | `netwatch` | `/tool/netwatch/print` | `BuildNetwatch` | `page-dashboard`, `page-netwatch` |
@@ -518,15 +519,15 @@ the document quietly lying.
 
 | fact | value |
 |---|---|
-| registry rows | 28 |
-| collectors with a Go implementation | 28 |
-| suspendable when idle (`disableable`) | 23 |
-| dormancy-eligible | 19 |
-| gated by demand (`session.TargetKeys`) | 26 |
-| menus enabled for stream delivery | 22 |
-| collectors declaring rooms | 23 |
+| registry rows | 29 |
+| collectors with a Go implementation | 29 |
+| suspendable when idle (`disableable`) | 24 |
+| dormancy-eligible | 20 |
+| gated by demand (`session.TargetKeys`) | 27 |
+| menus enabled for stream delivery | 25 |
+| collectors declaring rooms | 24 |
 | `keepAliveFor` entries | 3 |
-| collectors with an extracted derivation | 25 |
+| collectors with an extracted derivation | 26 |
 
 ---
 

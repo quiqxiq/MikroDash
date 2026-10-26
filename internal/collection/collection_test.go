@@ -84,7 +84,7 @@ func routerFor(c resolveCase) *Router {
 // not named is a real drift, and a named key that Resolve does not produce is an
 // entry to delete. `areas` is the first: one collector for every generated page,
 // declared in internal/areas, with no live counterpart at all.
-var goOnlyCollectors = map[string]bool{"areas": true}
+var goOnlyCollectors = map[string]bool{"areas": true, "hotspot": true}
 
 func TestResolveMatchesTheLiveModule(t *testing.T) {
 	for _, c := range loadCases(t) {

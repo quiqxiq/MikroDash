@@ -2334,6 +2334,10 @@ func (cn *conn) refreshFor(res *resource.Resource) {
 		if cn.rsession.CollectorEnabled("ppp") {
 			cn.rsession.PPP().RefreshNow()
 		}
+	case "hotspot":
+		if cn.rsession.CollectorEnabled("hotspot") {
+			cn.rsession.Hotspot().RefreshNow()
+		}
 	default:
 		// ── A GENERATED PAGE, AND ONE CASE FOR ALL OF THEM ──────────────────
 		//

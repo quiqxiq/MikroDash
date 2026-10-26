@@ -128,6 +128,7 @@ var addedSinceLive = map[string]string{
 		"are its whole content, and a router with connection tracking disabled returns " +
 		"them empty forever while being polled every three seconds. The live app left " +
 		"this collector unjudgeable; nothing about that was deliberate.",
+	"hotspot": "HotSpot collector added in Go. When active sessions, users, and servers are all empty, the router runs no hotspot service and can sleep.",
 }
 
 func TestDormancyEligibleMatchesLive(t *testing.T) {

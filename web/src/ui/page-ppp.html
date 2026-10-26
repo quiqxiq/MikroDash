@@ -1,14 +1,18 @@
   <div class="page-view" id="page-ppp">
     <div class="container-fluid px-0" style="width:100%">
 
-      <div class="wl-summary-row wl-summary-row-4">
+      <div class="wl-summary-row wl-summary-row-4" style="grid-template-columns:repeat(auto-fit, minmax(130px, 1fr))">
         <div class="wl-summary-card">
           <div class="wl-summary-title">Active Sessions</div>
-          <div class="fa-stat-val" id="pppSumCount">-</div>
+          <div class="fa-stat-val" id="pppSumCount" style="color:var(--accent-ok)">-</div>
         </div>
         <div class="wl-summary-card">
-          <div class="wl-summary-title">Services</div>
-          <div class="fa-stat-val" id="pppSumServices" style="font-size:.8rem">-</div>
+          <div class="wl-summary-title">Inactive Secrets</div>
+          <div class="fa-stat-val" id="pppSumInactive" style="color:var(--text-muted)">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Configured Secrets</div>
+          <div class="fa-stat-val" id="pppSumSecrets">-</div>
         </div>
         <div class="wl-summary-card">
           <div class="wl-summary-title">Download</div>
@@ -20,106 +24,119 @@
         </div>
       </div>
 
-      <!-- PPP CONFIGURATION. Three RouterOS menus behind one tab strip, the
-           first two editable through the shared resource dialog and Servers
-           read-only. It sits ABOVE Active Sessions because this is the half an
-           operator comes here to CHANGE; the sessions table below is what the
-           change produces.
-
-           EACH TBODY KEEPS ITS OWN `data-res-rows` rather than one being
-           rewritten as the tab moves. `mountRows` is delegated from the
-           document, so a hidden panel simply cannot be clicked, and a row can
-           never be addressed as the wrong resource. Only the Add slot has to
-           follow the tab, because there is exactly one of it. -->
-      <div class="card" id="pppCfgCard">
-        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-          <div class="stab-bar" id="pppCfgTabBar" role="tablist" aria-label="PPP configuration">
-            <button class="stab active" data-ppptab="secrets" role="tab" aria-selected="true"
-                    aria-controls="ppptab-secrets" id="pppTabBtn-secrets">Secrets <span id="pppSecretBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
-            <button class="stab" data-ppptab="profiles" role="tab" aria-selected="false"
-                    aria-controls="ppptab-profiles" id="pppTabBtn-profiles">Profiles <span id="pppProfileBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
-            <button class="stab" data-ppptab="servers" role="tab" aria-selected="false"
-                    aria-controls="ppptab-servers" id="pppTabBtn-servers">PPPoE Servers</button>
-          </div>
-          <div class="hdr-actions">
-            <input id="pppSecretSearch" class="sform-input sform-sm"
-                   placeholder="Search user, profile or address&hellip;" style="flex:0 1 260px;width:260px"/>
-            <!-- Which resource this means follows the active tab: ppp.ts rewrites
-                 data-res-add and fires mikrodash:resmount. data-res-add-dynamic
-                 declares the whole range it can become, so the mount is greppable
-                 and a resource reachable only after a tab change still counts.
-                 SERVERS SETS IT EMPTY, which mountAddSlots renders as no button
-                 at all -- the table is read-only and must not offer an Add. -->
-            <span id="pppAddSlot" data-res-add="pppSecret"
-                  data-res-add-dynamic="pppSecret,pppProfile"></span>
-          </div>
-        </div>
-        <div class="card-body p-0">
-
-          <div class="capstab-panel" id="ppptab-secrets" role="tabpanel"
-               aria-labelledby="pppTabBtn-secrets">
-            <div class="data-scroll" style="max-height:360px;overflow-y:auto">
-              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:820px">
-                <colgroup><col style="width:11%"><col style="width:18%"><col style="width:10%"><col style="width:14%">
-                          <col style="width:14%"><col style="width:14%"><col style="width:19%"></colgroup>
-                <thead><tr id="pppSecretThead"></tr></thead>
-                <tbody id="pppSecretTable" data-res-rows="pppSecret">
-                  <tr><td colspan="7" class="empty-state">Waiting for PPP secrets&hellip;</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="capstab-panel" id="ppptab-profiles" role="tabpanel"
-               aria-labelledby="pppTabBtn-profiles" hidden>
-            <div class="data-scroll" style="max-height:360px;overflow-y:auto">
-              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:640px">
-                <colgroup><col style="width:24%"><col style="width:20%"><col style="width:20%"><col style="width:18%"><col style="width:18%"></colgroup>
-                <thead><tr><th>Name</th><th>Local Address</th><th>Remote Address</th><th>Rate Limit</th><th>Encryption</th></tr></thead>
-                <tbody id="pppProfileTable" data-res-rows="pppProfile">
-                  <tr><td colspan="5" class="empty-state">Waiting for PPP configuration&hellip;</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="capstab-panel" id="ppptab-servers" role="tabpanel"
-               aria-labelledby="pppTabBtn-servers" hidden>
-            <div class="data-scroll" style="max-height:360px;overflow-y:auto">
-              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:640px">
-                <colgroup><col style="width:26%"><col style="width:26%"><col style="width:24%"><col style="width:24%"></colgroup>
-                <thead><tr><th>Service Name</th><th>Interface</th><th>Sessions</th><th>State</th></tr></thead>
-                <tbody id="pppServerTable">
-                  <tr><td colspan="4" class="empty-state">Waiting for PPP configuration&hellip;</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
       <div class="card" id="pppCard" style="margin-top:.85rem">
         <div class="stale-overlay">&#9679; stale</div>
         <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div class="d-flex align-items-center gap-2">
-            <h3 class="card-title mb-0">Active Sessions</h3>
+            <h3 class="card-title mb-0">PPPoE &amp; PPP</h3>
             <span id="pppBadge" class="card-badge">0</span>
           </div>
-          <input id="pppSearch" class="sform-input sform-sm"
-                 placeholder="Search user, address or caller id…" style="flex:0 1 280px;width:280px"/>
-        </div>
-        <div class="card-body p-0">
-          <div class="data-scroll" style="max-height:calc(100vh - 380px);overflow-y:auto">
-            <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:860px">
-              <colgroup><col style="width:16%"><col style="width:10%"><col style="width:14%"><col style="width:15%">
-                        <col style="width:11%"><col style="width:17%"><col style="width:17%"></colgroup>
-              <thead><tr id="pppThead"></tr></thead>
-              <tbody id="pppTable">
-                <tr><td colspan="7" class="empty-state">Waiting for PPP data&hellip;</td></tr>
-              </tbody>
-            </table>
+          <div class="stab-bar rttab-bar" id="pppCfgTabBar" role="tablist" aria-label="PPPoE &amp; PPP tabs">
+            <button class="stab active" data-ppptab="secrets" role="tab" aria-selected="true"
+                    aria-controls="ppptab-secrets" id="pppTabBtn-secrets">Secrets <span id="pppSecretBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-ppptab="active" role="tab" aria-selected="false"
+                    aria-controls="ppptab-active" id="pppTabBtn-active">Active Connection <span id="pppActiveBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-ppptab="inactive" role="tab" aria-selected="false"
+                    aria-controls="ppptab-inactive" id="pppTabBtn-inactive">Inactive Connection <span id="pppInactiveBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-ppptab="interfaces" role="tab" aria-selected="false"
+                    aria-controls="ppptab-interfaces" id="pppTabBtn-interfaces">Interfaces <span id="pppInterfacesBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-ppptab="servers" role="tab" aria-selected="false"
+                    aria-controls="ppptab-servers" id="pppTabBtn-servers">PPPoE Server <span id="pppServerBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-ppptab="profiles" role="tab" aria-selected="false"
+                    aria-controls="ppptab-profiles" id="pppTabBtn-profiles">Profiles <span id="pppProfileBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
           </div>
+          <div class="hdr-actions">
+            <input id="pppSearch" class="sform-input sform-sm"
+                   placeholder="Search pppoe&hellip;" style="flex:0 1 240px;width:240px"/>
+            <span id="pppAddSlot" data-res-add="pppSecret"
+                  data-res-add-dynamic="pppSecret,pppProfile,pppoeServer"></span>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+
+          <!-- TAB 1: SECRETS -->
+          <div class="capstab-panel" id="ppptab-secrets" role="tabpanel" aria-labelledby="pppTabBtn-secrets">
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:880px">
+                <colgroup><col style="width:10%"><col style="width:16%"><col style="width:9%"><col style="width:12%">
+                          <col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:14%"></colgroup>
+                <thead><tr id="pppSecretThead"></tr></thead>
+                <tbody id="pppSecretTable" data-res-rows="pppSecret">
+                  <tr><td colspan="8" class="empty-state">Waiting for PPP secrets&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 2: ACTIVE CONNECTION -->
+          <div class="capstab-panel" id="ppptab-active" role="tabpanel" aria-labelledby="pppTabBtn-active" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:860px">
+                <colgroup><col style="width:16%"><col style="width:10%"><col style="width:14%"><col style="width:15%">
+                          <col style="width:11%"><col style="width:17%"><col style="width:17%"></colgroup>
+                <thead><tr id="pppThead"></tr></thead>
+                <tbody id="pppTable" data-res-rows="pppActive">
+                  <tr><td colspan="7" class="empty-state">Waiting for active PPP sessions&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 3: INACTIVE CONNECTION -->
+          <div class="capstab-panel" id="ppptab-inactive" role="tabpanel" aria-labelledby="pppTabBtn-inactive" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:880px">
+                <colgroup><col style="width:10%"><col style="width:16%"><col style="width:9%"><col style="width:12%">
+                          <col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:14%"></colgroup>
+                <thead><tr id="pppInactiveThead"></tr></thead>
+                <tbody id="pppInactiveTable" data-res-rows="pppSecret">
+                  <tr><td colspan="8" class="empty-state">No inactive PPP secrets.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 4: INTERFACES -->
+          <div class="capstab-panel" id="ppptab-interfaces" role="tabpanel" aria-labelledby="pppTabBtn-interfaces" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:750px">
+                <colgroup><col style="width:22%"><col style="width:18%"><col style="width:12%"><col style="width:18%">
+                          <col style="width:16%"><col style="width:14%"></colgroup>
+                <thead><tr id="pppInterfacesThead"></tr></thead>
+                <tbody id="pppInterfacesTable">
+                  <tr><td colspan="6" class="empty-state">Waiting for PPPoE interfaces&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 5: PPPOE SERVER -->
+          <div class="capstab-panel" id="ppptab-servers" role="tabpanel" aria-labelledby="pppTabBtn-servers" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:750px">
+                <colgroup><col style="width:24%"><col style="width:20%"><col style="width:20%"><col style="width:18%"><col style="width:18%"></colgroup>
+                <thead><tr id="pppServersThead"></tr></thead>
+                <tbody id="pppServerTable" data-res-rows="pppoeServer">
+                  <tr><td colspan="5" class="empty-state">Waiting for PPPoE server configuration&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 6: PROFILES -->
+          <div class="capstab-panel" id="ppptab-profiles" role="tabpanel" aria-labelledby="pppTabBtn-profiles" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:700px">
+                <colgroup><col style="width:24%"><col style="width:20%"><col style="width:20%"><col style="width:18%"><col style="width:18%"></colgroup>
+                <thead><tr id="pppProfilesThead"></tr></thead>
+                <tbody id="pppProfileTable" data-res-rows="pppProfile">
+                  <tr><td colspan="5" class="empty-state">Waiting for PPP profiles&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
 

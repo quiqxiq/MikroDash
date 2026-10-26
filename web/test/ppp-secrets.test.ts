@@ -52,6 +52,12 @@ const IDS = [
   'pppProfileTable', 'pppProfileBadge', 'pppServerTable',
   'pppCfgTabBar', 'pppAddSlot',
   'ppptab-secrets', 'ppptab-profiles', 'ppptab-servers',
+  'ppptab-active', 'ppptab-inactive', 'ppptab-interfaces',
+  'pppActiveBadge',
+  'pppInactiveTable', 'pppInactiveThead', 'pppInactiveBadge',
+  'pppInterfacesTable', 'pppInterfacesThead', 'pppInterfacesBadge',
+  'pppServersThead', 'pppProfilesThead', 'pppServerBadge',
+  'pppSumInactive', 'pppSumSecrets', 'pppCard',
 ];
 
 // A MARKER THE PAGE COULD ONLY RENDER IF SOMETHING WENT WRONG.

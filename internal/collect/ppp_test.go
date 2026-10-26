@@ -325,3 +325,29 @@ func TestBuildPPPGroupsUnnamedServicesAsOTHER(t *testing.T) {
 		t.Error("an empty-string service bucket was created; the page renders it as a blank row")
 	}
 }
+
+func TestPPPoEInterfacesPassThrough(t *testing.T) {
+	ifaces := []PPPoEInterface{
+		{ID: "*1", Name: "<pppoe-user1>", User: "user1", Interface: "ether2", Uptime: "1h", Running: true},
+	}
+	got, _, _ := BuildPPP(PPPInput{
+		Interfaces: ifaces,
+		Now:        time.Unix(100, 0),
+	})
+	if len(got.Interfaces) != 1 || got.Interfaces[0].Name != "<pppoe-user1>" {
+		t.Fatalf("interfaces not passed through: %v", got.Interfaces)
+	}
+}
+
+func TestPPPoEServerCarriesID(t *testing.T) {
+	servers := []PPPServer{
+		{ID: "*s1", ServiceName: "service1", Interface: "ether1", Disabled: false},
+	}
+	got, _, _ := BuildPPP(PPPInput{
+		Servers: servers,
+		Now:     time.Unix(100, 0),
+	})
+	if len(got.Servers) != 1 || got.Servers[0].ID != "*s1" {
+		t.Fatalf("server ID not carried: %v", got.Servers)
+	}
+}

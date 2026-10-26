@@ -66,6 +66,8 @@ the rows, since the generator that once produced them is gone.
 | `/interface/wifi/radio/print` | src/collectors/capsman.js, src/collectors/wifi.js |
 | `/interface/wifi/registration-table/print` | src/collectors/capsman.js, src/collectors/topology.js, src/collectors/wifi.js, src/collectors/wireless.js |
 | `/interface/wifi/security/print` | src/routeros/wifiMenus.js |
+| `/interface/pppoe-server/print` | internal/collect/ppp.go |
+| `/interface/pppoe-server/server/print` | internal/collect/ppp.go |
 | `/interface/wireguard/peers/print` | src/collectors/vpn.js |
 | `/interface/wireless/print` | src/collectors/topology.js, src/collectors/wifi.js, src/collectors/wireless.js |
 | `/interface/wireless/registration-table/print` | src/collectors/topology.js, src/collectors/wifi.js, src/collectors/wireless.js |
@@ -86,6 +88,16 @@ the rows, since the generator that once produced them is gone.
 | `/ip/firewall/mangle/print` | src/collectors/firewall.js |
 | `/ip/firewall/nat/print` | src/collectors/firewall.js |
 | `/ip/firewall/raw/print` | src/collectors/firewall.js |
+| `/ip/hotspot/active/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/cookie/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/host/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/ip-binding/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/profile/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/user/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/user/profile/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/walled-garden/ip/print` | internal/collect/hotspot.go |
+| `/ip/hotspot/walled-garden/print` | internal/collect/hotspot.go |
 | `/ip/ipsec/active-peers/print` | src/collectors/vpn.js |
 | `/ip/ipsec/installed-sa/print` | src/collectors/vpn.js |
 | `/ip/kid-control/device/print` | src/collectors/talkers.js |
@@ -97,6 +109,7 @@ the rows, since the generator that once produced them is gone.
 | `/log/print` | src/collectors/logs.js |
 | `/ppp/active/print` | src/collectors/ppp.js, src/collectors/vpn.js |
 | `/ppp/profile/print` | src/collectors/ppp.js |
+| `/ppp/secret/print` | internal/collect/ppp.go |
 | `/queue/simple/print` | src/collectors/queues.js |
 | `/queue/tree/print` | src/collectors/queues.js |
 | `/routing/bgp/session/print` | src/collectors/routing.js |
@@ -266,6 +279,8 @@ carries a small file's contents.
 | `/interface/ovpn-server/server` | ovpnServer | openvpn | add, set, remove |
 | `/interface/ovpn-client` | ovpnClient | openvpn | add, set, remove (selfPath, tunnelDefault; password never read) |
 | `/interface/pppoe-client` | pppoeClient | pppoe-clients | add, set, remove (selfPath, tunnelDefault; password never read) |
+| `/interface/pppoe-server/server` | pppoeServer | ppp | add, set, remove |
+| `/ppp/active` | pppActive | ppp | remove |
 | `/container` | container | containers | add, set, remove, start, stop (codeGate on image, cmd, entrypoint) |
 | `/container/envs` | containerEnv | containers | add, set, remove (value never read) |
 | `/container/mounts` | containerMount | containers | add, set, remove |
@@ -281,6 +296,16 @@ carries a small file's contents.
 | `/ip/dhcp-server` | dhcpServer | dhcp-servers | add, set, remove (codeGate on the lease script) |
 | `/ip/dhcp-server/network` | dhcpNetwork | dhcp-servers | add, set, remove |
 | `/ip/dhcp-server/lease` | dhcpLease | dhcp | add, set, remove, make-static |
+| `/ip/hotspot` | hotspotServer | hotspot | add, set, remove |
+| `/ip/hotspot/profile` | hotspotServerProfile | hotspot | add, set, remove |
+| `/ip/hotspot/user` | hotspotUser | hotspot | add, set, remove (password never read) |
+| `/ip/hotspot/user/profile` | hotspotUserProfile | hotspot | add, set, remove |
+| `/ip/hotspot/ip-binding` | hotspotIPBinding | hotspot | add, set, remove |
+| `/ip/hotspot/host` | hotspotHost | hotspot | remove |
+| `/ip/hotspot/active` | hotspotActive | hotspot | remove |
+| `/ip/hotspot/cookie` | hotspotCookie | hotspot | remove |
+| `/ip/hotspot/walled-garden` | hotspotWalledGarden | hotspot | add, set, remove |
+| `/ip/hotspot/walled-garden/ip` | hotspotWalledGardenIP | hotspot | add, set, remove |
 | `/ip/address` | ipAddress | ip-addresses | add, set, remove |
 | `/ip/ipsec/peer` | ipsecPeer | ipsec | add, set, remove (guarded by ipsecPath; ppk-secret never read) |
 | `/ip/ipsec/identity` | ipsecIdentity | ipsec | add, set, remove (guarded by ipsecPath; secret and password never read) |

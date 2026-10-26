@@ -123,6 +123,9 @@ var streamableMenus = map[string]string{
 	"/interface/wifi/registration-table/print": "wireless",
 	"/ip/dhcp-server/lease/print":              "dhcpLeases",
 	"/ppp/active/print":                        "ppp",
+	"/ppp/secret/print":                        "ppp",
+	"/ip/hotspot/active/print":                 "hotspot",
+	"/ip/hotspot/user/print":                   "hotspot",
 	// The bridge HOST table, not the port table: hosts are what `bridges`
 	// subscribes to. A first attempt named `/interface/bridge/port/print` and
 	// the gate rejected it — nothing subscribes to it, so the line would have

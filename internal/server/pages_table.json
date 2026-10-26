@@ -228,8 +228,13 @@
     },
     {
       "key": "ppp",
-      "title": "PPP",
+      "title": "PPPoE",
       "settingsKey": "pagePpp"
+    },
+    {
+      "key": "hotspot",
+      "title": "HotSpot",
+      "settingsKey": "pageHotspot"
     },
     {
       "key": "vpn",

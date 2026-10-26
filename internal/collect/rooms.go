@@ -75,6 +75,7 @@ var (
 	dnsRooms         = Rooms{"page-dns"}
 	netwatchRooms    = Rooms{"page-dashboard", "page-netwatch"}
 	firewallRooms    = Rooms{"page-firewall", "dash-card-firewall"}
+	hotspotRooms     = Rooms{"page-hotspot"}
 	ifStatusRooms    = Rooms{"page-interfaces", "page-network-topology", "dash-card-physports"}
 	logsRooms        = Rooms{"page-logs", "dash-card-logs"}
 	pppRooms         = Rooms{"page-ppp"}
@@ -137,6 +138,8 @@ func RoomsOf(key string) Rooms {
 		return dnsRooms
 	case "firewall":
 		return firewallRooms
+	case "hotspot":
+		return hotspotRooms
 	case "ifStatus":
 		return ifStatusRooms
 	case "areas":
@@ -292,7 +295,7 @@ var keepAliveFor = map[string]Rooms{
 func DeclaredRoomKeys() []string {
 	return []string{
 		"bandwidth", "bridges", "capsman", "conns", "dhcpNetworks", "dns",
-		"firewall", "ifStatus", "logs", "netwatch", "packages", "ping", "ppp",
+		"firewall", "hotspot", "ifStatus", "logs", "netwatch", "packages", "ping", "ppp",
 		"queues", "rosusers", "routing", "talkers", "topology", "vlans", "vpn",
 		"wan", "wifi", "wireless",
 	}

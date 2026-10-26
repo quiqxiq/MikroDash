@@ -60,6 +60,7 @@ export const ALL_NAV_PAGES: readonly string[] = [
   "dhcp",
   "dns",
   "routing",
+  "hotspot",
   "netwatch",
   "ppp",
   "vpn",

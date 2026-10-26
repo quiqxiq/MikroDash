@@ -227,6 +227,9 @@ func TestEveryTableCollectorsCadenceFollowsARetune(t *testing.T) {
 		"dns.go": func() (func(int), func() time.Duration, func() int, [3]int) {
 			return tableProbe(&NewDNS(nil, Emit{}, 0).tableCore)
 		},
+		"hotspot.go": func() (func(int), func() time.Duration, func() int, [3]int) {
+			return tableProbe(&NewHotspot(nil, Emit{}, 0).tableCore)
+		},
 		"netwatch.go": func() (func(int), func() time.Duration, func() int, [3]int) {
 			return tableProbe(&NewNetwatch(nil, Emit{}, 0).tableCore)
 		},

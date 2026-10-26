@@ -236,6 +236,66 @@
       "page": "firewall"
     },
     {
+      "name": "list_hotspotActive",
+      "access": "read",
+      "resource": "hotspotActive",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotCookie",
+      "access": "read",
+      "resource": "hotspotCookie",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotHost",
+      "access": "read",
+      "resource": "hotspotHost",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotIPBinding",
+      "access": "read",
+      "resource": "hotspotIPBinding",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotServer",
+      "access": "read",
+      "resource": "hotspotServer",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotServerProfile",
+      "access": "read",
+      "resource": "hotspotServerProfile",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotUser",
+      "access": "read",
+      "resource": "hotspotUser",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotUserProfile",
+      "access": "read",
+      "resource": "hotspotUserProfile",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotWalledGarden",
+      "access": "read",
+      "resource": "hotspotWalledGarden",
+      "page": "hotspot"
+    },
+    {
+      "name": "list_hotspotWalledGardenIP",
+      "access": "read",
+      "resource": "hotspotWalledGardenIP",
+      "page": "hotspot"
+    },
+    {
       "name": "list_ifList",
       "access": "read",
       "resource": "ifList",
@@ -383,6 +443,12 @@
       "page": "packages"
     },
     {
+      "name": "list_pppActive",
+      "access": "read",
+      "resource": "pppActive",
+      "page": "ppp"
+    },
+    {
       "name": "list_pppProfile",
       "access": "read",
       "resource": "pppProfile",
@@ -406,6 +472,12 @@
       "access": "read",
       "resource": "pppoeClient",
       "page": "pppoe-clients"
+    },
+    {
+      "name": "list_pppoeServer",
+      "access": "read",
+      "resource": "pppoeServer",
+      "page": "ppp"
     },
     {
       "name": "list_queueTree",

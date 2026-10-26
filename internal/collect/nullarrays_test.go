@@ -60,6 +60,11 @@ var extraBuilders = map[string]func(Reader) any{
 		p, _ := ported["ifStatus"](r, Emit{}).(*IfStatusPayload)
 		return NamesOf(p)
 	},
+	"hotspot": func(r Reader) any {
+		h := NewHotspot(r, Emit{}, 5000)
+		h.Tick()
+		return h.Last()
+	},
 	// Watch on a collector that has seen no samples is the empty case for
 	// traffic:history: the page asks for an interface before any has arrived.
 	"traffic#history": func(r Reader) any {

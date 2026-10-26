@@ -71,7 +71,7 @@ var credPattern = regexp.MustCompile(`(?i)(pass|secret|token|psk|api[-_]?key|aut
 
 // IsCredentialField reports whether a field's value must be masked.
 func IsCredentialField(name string) bool {
-	if name == "" {
+	if name == "" || name == "bypassed" {
 		return false
 	}
 	return credentialFields[name] || credPattern.MatchString(name)

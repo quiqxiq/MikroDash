@@ -49,6 +49,7 @@ func TestEveryCollectorDeclaresItsDerivation(t *testing.T) {
 		"capsman.go":     "BuildCapsmanView, BuildCapsmanLegacyView",
 		"connections.go": "BuildConns",
 		"dns.go":         "ParseDNSSettings,ParseStaticEntries",
+		"hotspot.go":     "ParseHotspotActive,BuildHotspot",
 		"ifstatus.go":    "BuildIfStatus",
 		"queues.go":      "BuildSimpleRows,BuildTreeRows",
 		"rosusers.go":    "BuildUsersView",

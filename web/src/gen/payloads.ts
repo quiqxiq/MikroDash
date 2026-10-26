@@ -767,6 +767,159 @@ export interface FirewallPayload {
   pollMs: number;
 }
 
+export interface HotspotActiveSession {
+  id: string;
+  server: string;
+  user: string;
+  domain: string;
+  address: string;
+  macAddress: string;
+  loginBy: string;
+  uptime: string;
+  keepaliveTimeout: string;
+  timeLeft: string;
+  idleTime: string;
+  bytesIn: number;
+  bytesOut: number;
+  packetsIn: number;
+  packetsOut: number;
+  rxRate: number | null;
+  txRate: number | null;
+}
+
+export interface HotspotUser {
+  id: string;
+  name: string;
+  profile: string;
+  server: string;
+  limitUptime: string;
+  limitBytesIn: number | null;
+  limitBytesOut: number | null;
+  limitBytesTotal: number | null;
+  routes: string;
+  email: string;
+  comment: string;
+  disabled: boolean;
+  connected: boolean;
+  activeIp: string;
+  activeMac: string;
+  activeUptime: string;
+}
+
+export interface HotspotUserProfile {
+  id: string;
+  name: string;
+  sharedUsers: string;
+  rateLimit: string;
+  idleTimeout: string;
+  keepaliveTimeout: string;
+  statusAutorefresh: string;
+  addressPool: string;
+  transparentProxy: boolean;
+  openStatusPage: string;
+  macCookieTimeout: string;
+}
+
+export interface HotspotServer {
+  id: string;
+  name: string;
+  interface: string;
+  addressPool: string;
+  profile: string;
+  idleTimeout: string;
+  keepaliveTimeout: string;
+  addressesPerMac: string;
+  disabled: boolean;
+}
+
+export interface HotspotServerProfile {
+  id: string;
+  name: string;
+  hotspotAddress: string;
+  dnsName: string;
+  htmlDirectory: string;
+  rateLimit: string;
+  httpProxy: string;
+  smtpServer: string;
+  loginBy: string;
+  sslCertificate: string;
+}
+
+export interface HotspotHost {
+  id: string;
+  macAddress: string;
+  address: string;
+  toAddress: string;
+  server: string;
+  bridgePort: string;
+  uptime: string;
+  idleTime: string;
+  bytesIn: number;
+  bytesOut: number;
+  authorized: boolean;
+  bypassed: boolean;
+  comment: string;
+}
+
+export interface HotspotIPBinding {
+  id: string;
+  macAddress: string;
+  address: string;
+  toAddress: string;
+  server: string;
+  type: string;
+  comment: string;
+  disabled: boolean;
+}
+
+export interface HotspotWalledGarden {
+  id: string;
+  dstHost: string;
+  dstPort: string;
+  path: string;
+  action: string;
+  server: string;
+  comment: string;
+  disabled: boolean;
+}
+
+export interface HotspotWalledGardenIP {
+  id: string;
+  dstAddress: string;
+  protocol: string;
+  dstPort: string;
+  action: string;
+  server: string;
+  comment: string;
+  disabled: boolean;
+}
+
+export interface HotspotCookie {
+  id: string;
+  user: string;
+  macAddress: string;
+  domain: string;
+  expiresIn: string;
+}
+
+export interface HotspotPayload {
+  ts: number;
+  pollMs: number;
+  active: HotspotActiveSession[];
+  users: HotspotUser[];
+  userProfiles: HotspotUserProfile[];
+  servers: HotspotServer[];
+  serverProfiles: HotspotServerProfile[];
+  hosts: HotspotHost[];
+  ipBindings: HotspotIPBinding[];
+  walledGarden: HotspotWalledGarden[];
+  walledGardenIp: HotspotWalledGardenIP[];
+  cookies: HotspotCookie[];
+  totalRxRate: number | null;
+  totalTxRate: number | null;
+  available: boolean;
+}
+
 export interface IfName {
   name: string;
   type: string;
@@ -993,10 +1146,21 @@ export interface PPPProfile {
 }
 
 export interface PPPServer {
+  id: string;
   serviceName: string;
   interface: string;
   maxSessions: string;
   auth: string;
+  disabled: boolean;
+}
+
+export interface PPPoEInterface {
+  id: string;
+  name: string;
+  user: string;
+  interface: string;
+  uptime: string;
+  running: boolean;
   disabled: boolean;
 }
 
@@ -1007,6 +1171,7 @@ export interface PPPPayload {
   secrets: PPPSecret[];
   profiles: PPPProfile[];
   servers: PPPServer[];
+  interfaces: PPPoEInterface[];
   byService: Record<string, number> | null;
   totalRxRate: number | null;
   totalTxRate: number | null;
@@ -2170,6 +2335,7 @@ export interface Events {
   'files:content': FilesContentPayload;
   'files:fetched': FilesFetchPayload;
   'firewall:update': FirewallPayload;
+  'hotspot:update': HotspotPayload;
   'ifstatus:names': IfNamesPayload;
   'ifstatus:update': IfStatusPayload;
   'lan:overview': LanPayload;

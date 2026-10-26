@@ -473,6 +473,10 @@ var addedSinceNode = map[string][]addedField{
 	"packages": {
 		{Spec: "firmware.autoUpgrade", ProvenBy: "TestFirmwareCarriesTheAutoUpgradeSetting"},
 	},
+	"ppp": {
+		{Spec: "interfaces", ProvenBy: "TestPPPoEInterfacesPassThrough"},
+		{Spec: "servers[].id", ProvenBy: "TestPPPoEServerCarriesID"},
+	},
 	"wireless": {
 		added("clients[].standard"),
 		{Spec: "clients[].comment", ProvenBy: "TestWirelessClientCarriesTheLeaseComment"},

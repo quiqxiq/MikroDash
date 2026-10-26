@@ -81,7 +81,7 @@ else
   #
   # LIKE `mikrodash-gomod`, THIS VOLUME LOOKS UNUSED BETWEEN RUNS. CLAUDE.md's
   # standing rule covers it: never `docker volume prune` on this daemon.
-  out=$(docker run --rm \
+  out=$(docker run --rm --security-opt label=disable \
     -v "$PWD":/src -w /src \
     -v mikrodash-gomod:/go/pkg/mod \
     -v mikrodash-gocache:/root/.cache/go-build \

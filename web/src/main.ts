@@ -33,6 +33,7 @@ import { initNetwatchPage } from './pages/netwatch';
 import { initAiAgentPage } from './pages/ai-agent';
 import { initDhcpPage } from './pages/dhcp';
 import { initPppPage } from './pages/ppp';
+import { initHotspotPage } from './pages/hotspot';
 import { initVpnPage } from './pages/vpn';
 import { initRosUsersPage } from './pages/rosusers';
 import { initQueuesPage } from './pages/queues';
@@ -646,6 +647,7 @@ async function main(): Promise<void> {
   initAiAgentPage(socket, pageVisible);
   initDhcpPage(socket, pageVisible);
   initPppPage(socket, pageVisible);
+  initHotspotPage(socket, pageVisible);
   initVpnPage(socket, pageVisible);
   initRosUsersPage(socket, pageVisible);
   initQueuesPage(socket, pageVisible);

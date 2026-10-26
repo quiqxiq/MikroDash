@@ -198,6 +198,7 @@ type Session struct {
 	dhcpLeases   *collect.DHCPLeases
 	dhcpNetworks *collect.DHCPNetworks
 	ppp          *collect.PPP
+	hotspot      *collect.Hotspot
 	vpn          *collect.VPN
 	netwatch     *collect.Netwatch
 	talkers      *collect.Talkers
@@ -328,6 +329,9 @@ func (s *Session) DHCPNetworks() *collect.DHCPNetworks { return s.dhcpNetworks }
 
 // PPP is the PPPoE/L2TP session collector behind the PPP page.
 func (s *Session) PPP() *collect.PPP { return s.ppp }
+
+// Hotspot is the captive portal collector behind the HotSpot page.
+func (s *Session) Hotspot() *collect.Hotspot { return s.hotspot }
 
 // VPN is the WireGuard, PPP-tunnel and IPsec collector behind the VPN page.
 func (s *Session) VPN() *collect.VPN { return s.vpn }
@@ -1212,6 +1216,7 @@ func (m *Manager) Acquire(routerID string) (*Session, error) {
 	// Its own poll interval, not the shared default: PPP rates are differences
 	// between byte counters, so the interval IS the measurement window.
 	s.ppp = collect.NewPPP(reader{s: s}, emit, s.conf().Poll["ppp"])
+	s.hotspot = collect.NewHotspot(reader{s: s}, emit, s.conf().Poll["hotspot"])
 	s.vpn = collect.NewVPN(reader{s: s}, emit, s.conf().Poll["vpn"])
 	// NOT suspended by page focus, because it has no page: the Dashboard card it
 	// feeds is visible whenever anyone is looking at the router at all. The idle
@@ -1359,7 +1364,7 @@ func (m *Manager) Acquire(routerID string) (*Session, error) {
 		// measurement, which is set B and can never be scheduled.
 		s.netwatch, s.talkers, s.dns, s.packages, s.rosUsers, s.queues,
 		s.bridges, s.system, s.conns, s.dhcpLeases, s.dhcpNetworks,
-		s.wan, s.capsman, s.ppp, s.routing, s.ifStatus, s.topology, s.vpn,
+		s.wan, s.capsman, s.ppp, s.hotspot, s.routing, s.ifStatus, s.topology, s.vpn,
 		// Mechanism B: the menu it wants is whichever firewall TABLE is on
 		// screen, so its subscription moves when the operator changes tab.
 		s.firewall,
@@ -2412,6 +2417,9 @@ func (s *Session) connectLoop() {
 			if s.conf().Enabled["ppp"] {
 				s.ppp.Reconnected()
 			}
+			if s.conf().Enabled["hotspot"] {
+				s.hotspot.Reconnected()
+			}
 			if s.conf().Enabled["vpn"] {
 				s.vpn.Reconnected()
 			}
@@ -2542,6 +2550,7 @@ func (s *Session) connectLoop() {
 		s.dhcpLeases.Suspend()
 		s.dhcpNetworks.Suspend()
 		s.ppp.Suspend()
+		s.hotspot.Suspend()
 		s.vpn.Suspend()
 		s.rosUsers.Suspend()
 		s.queues.Suspend()

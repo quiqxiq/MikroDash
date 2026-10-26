@@ -64,6 +64,7 @@ func TestFastPollCollectorsSplitTheirSlowReads(t *testing.T) {
 		"firewall":  {"", "one read per poll, of the table on screen: its rows ARE what the page shows, counters included, and a rule changed in Winbox must appear"},
 		"vlans":     {"vlanConfigEvery", ""},
 		"ppp":       {"pppConfigEvery", ""},
+		"hotspot":   {"hotspotConfigEvery", "active sessions, hosts and cookies are live; users, profiles, servers, ip-bindings and walled-garden are the slow half"},
 		"bridges":   {"bridgeConfigEvery", ""},
 		"queues":    {"", "both menus carry the live byte and rate counters the page exists to show"},
 		"vpn":       {"", "peers, active-peers, installed-sa and ppp/active are all session state"},

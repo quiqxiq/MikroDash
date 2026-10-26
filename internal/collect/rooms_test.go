@@ -253,7 +253,7 @@ func TestDeclaredRoomKeysMatchesTheSwitch(t *testing.T) {
 func declaredKeys() []string {
 	return []string{
 		"bandwidth", "bridges", "capsman", "conns", "dhcpNetworks", "dns",
-		"firewall", "ifStatus", "logs", "netwatch", "packages", "ping", "ppp",
+		"firewall", "hotspot", "ifStatus", "logs", "netwatch", "packages", "ping", "ppp",
 		"queues", "rosusers", "routing", "talkers", "topology", "vlans", "vpn",
 		"wan", "wifi", "wireless",
 	}
@@ -268,9 +268,9 @@ func TestDeclaredKeysCoverRoomsOf(t *testing.T) {
 			t.Errorf("declaredKeys names %q and RoomsOf returns nothing for it", key)
 		}
 	}
-	// 24 -> 23 on 2026-09-18: `ipAddresses` deleted, its page an area.
-	if got := len(declaredKeys()); got != 23 {
-		t.Errorf("declaredKeys has %d entries, expected 23 — a collector gained or lost "+
+	// 23 -> 24 on hotspot collector added.
+	if got := len(declaredKeys()); got != 24 {
+		t.Errorf("declaredKeys has %d entries, expected 24 — a collector gained or lost "+
 			"an audience and one of these lists was not updated", got)
 	}
 }

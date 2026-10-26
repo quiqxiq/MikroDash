@@ -24,6 +24,9 @@ web/node_modules/
 # Working notes for the current iteration. Cleared after every push.
 Changes.md
 
+# Local development data directory
+devdata/
+
 # ── Agent tooling ─────────────────────────────────────────────────────────
 #
 # Ignored WHOLESALE, which is this repo's long-standing rule and deliberately

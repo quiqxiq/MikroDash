@@ -99,7 +99,8 @@ var All = []Page{
 	// dhcpNetworks for LAN classification, so it is not the operator's to switch
 	// off. Said here so nobody "fixes" the asymmetry.
 	{Key: "dhcp", Title: "DHCP", Collector: "dhcpNetworks"},
-	{Key: "ppp", Title: "PPP", Collector: "ppp"},
+	{Key: "hotspot", Title: "HotSpot", Collector: "hotspot"},
+	{Key: "ppp", Title: "PPPoE", Collector: "ppp"},
 	{Key: "vpn", Title: "VPN", Collector: "vpn"},
 	{Key: "users", Title: "Users", Collector: "rosusers"},
 	{Key: "queues", Title: "Queues", Collector: "queues"},

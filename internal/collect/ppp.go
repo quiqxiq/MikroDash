@@ -84,6 +84,8 @@ var (
 		"=.proplist=.id,name,local-address,remote-address,rate-limit,only-one,use-encryption"}}
 	pppServerCmd = routeros.Cmd{Path: "/interface/pppoe-server/server/print", Args: []string{
 		"=.proplist=.id,service-name,interface,disabled,max-sessions,authentication"}}
+	pppoeInterfaceCmd = routeros.Cmd{Path: "/interface/pppoe-server/print", Args: []string{
+		"=.proplist=.id,name,user,interface,uptime,running,disabled"}}
 	// EVERY PROPERTY THE PAGE NEEDS, AND NOT `password`.
 	//
 	// The proplist is the enforcement point, not a convention: an explicit list
@@ -93,6 +95,8 @@ var (
 	pppSecretCmd = routeros.Cmd{Path: "/ppp/secret/print", Args: []string{
 		"=.proplist=.id,name,service,profile,local-address,remote-address,caller-id," +
 			"routes,limit-bytes-in,limit-bytes-out,comment,disabled"}}
+	pppIfBytesCmd = routeros.Cmd{Path: "/interface/print", Args: []string{
+		"=.proplist=name,rx-byte,tx-byte"}}
 )
 
 // Config is re-read every N ticks; sessions are read every tick.
@@ -190,6 +194,7 @@ type PPPProfile struct {
 }
 
 type PPPServer struct {
+	ID          string `json:"id"`
 	ServiceName string `json:"serviceName"`
 	Interface   string `json:"interface"`
 	MaxSessions string `json:"maxSessions"`
@@ -197,16 +202,27 @@ type PPPServer struct {
 	Disabled    bool   `json:"disabled"`
 }
 
+type PPPoEInterface struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	User      string `json:"user"`
+	Interface string `json:"interface"`
+	Uptime    string `json:"uptime"`
+	Running   bool   `json:"running"`
+	Disabled  bool   `json:"disabled"`
+}
+
 type PPPPayload struct {
-	TS          int64          `json:"ts"`
-	PollMs      int            `json:"pollMs"`
-	Sessions    []PPPSession   `json:"sessions"`
-	Secrets     []PPPSecret    `json:"secrets"`
-	Profiles    []PPPProfile   `json:"profiles"`
-	Servers     []PPPServer    `json:"servers"`
-	ByService   map[string]int `json:"byService"`
-	TotalRXRate *float64       `json:"totalRxRate"`
-	TotalTXRate *float64       `json:"totalTxRate"`
+	TS          int64            `json:"ts"`
+	PollMs      int              `json:"pollMs"`
+	Sessions    []PPPSession     `json:"sessions"`
+	Secrets     []PPPSecret      `json:"secrets"`
+	Profiles    []PPPProfile     `json:"profiles"`
+	Servers     []PPPServer      `json:"servers"`
+	Interfaces  []PPPoEInterface `json:"interfaces"`
+	ByService   map[string]int   `json:"byService"`
+	TotalRXRate *float64         `json:"totalRxRate"`
+	TotalTXRate *float64         `json:"totalTxRate"`
 	// So the page can say "this router has no PPP service" rather than showing
 	// an empty table, which reads as a failure.
 	Available bool `json:"available"`
@@ -223,15 +239,18 @@ type PPP struct {
 	emit Emit
 
 	// prev is the last counter reading per session, which is what makes a rate.
-	prev     map[string]pppSample
-	secrets  []PPPSecret
-	profiles []PPPProfile
-	servers  []PPPServer
+	prev           map[string]pppSample
+	secrets        []PPPSecret
+	profiles       []PPPProfile
+	servers        []PPPServer
+	interfaces     []PPPoEInterface
+	lastActiveRows []routeros.Reply
 	// nil = unprobed, false = this router has no such menu, stop asking.
-	activeAvail  *bool
-	profileAvail *bool
-	serverAvail  *bool
-	secretAvail  *bool
+	activeAvail    *bool
+	profileAvail   *bool
+	serverAvail    *bool
+	interfaceAvail *bool
+	secretAvail    *bool
 }
 
 func NewPPP(ros Reader, emit Emit, pollMs int) *PPP {
@@ -239,10 +258,11 @@ func NewPPP(ros Reader, emit Emit, pollMs int) *PPP {
 	// Node's call was (pollMs, 5000, 60000, 2000) in (raw, def, hi, lo) order. The
 	// floor is now the store's 1 s, so a saved interval is the one used
 	// (2026-09-18; pollbounds_test.go).
-	// Subscribed to /ppp/active, the live sessions; the config tables are the
-	// slow lane.
+	// Subscribed to /ppp/active (live sessions) and /ppp/secret (streaming accounts);
+	// profiles, servers and dynamic interfaces are the slow lane.
 	p.setup(p, ros, pollMs, tableSpec{
 		cmd: pppActiveCmd, poll: [3]int{5000, 1000, 60000},
+		also:      []routeros.Cmd{pppSecretCmd},
 		slowEvery: pppConfigEvery, heartbeat: pppHeartbeat,
 	})
 	return p
@@ -383,17 +403,36 @@ func (p *PPP) loadConfig() {
 			continue
 		}
 		servers = append(servers, PPPServer{
+			ID:          r[".id"],
 			ServiceName: r["service-name"], Interface: r["interface"],
 			MaxSessions: r["max-sessions"], Auth: r["authentication"],
 			Disabled: boolOf(r["disabled"]),
 		})
 	}
-	// SECRETS RIDE THE CONFIG CADENCE, not the tick. A subscriber list does not
-	// change every five seconds, and CLAUDE.md's measure of efficiency is router
-	// channels rather than CPU — so this is one command a minute, not twelve.
-	// A write does not wait for it: `RefreshNow` re-reads immediately.
-	secrets := make([]PPPSecret, 0)
-	for _, r := range p.read(pppSecretCmd, &p.secretAvail) {
+	interfaces := make([]PPPoEInterface, 0)
+	for _, r := range p.read(pppoeInterfaceCmd, &p.interfaceAvail) {
+		if r["name"] == "" {
+			continue
+		}
+		interfaces = append(interfaces, PPPoEInterface{
+			ID:        r[".id"],
+			Name:      r["name"],
+			User:      r["user"],
+			Interface: r["interface"],
+			Uptime:    r["uptime"],
+			Running:   boolOf(r["running"]),
+			Disabled:  boolOf(r["disabled"]),
+		})
+	}
+	if len(p.secrets) == 0 {
+		p.secrets = p.parseSecrets(p.read(pppSecretCmd, &p.secretAvail))
+	}
+	p.profiles, p.servers, p.interfaces = profiles, servers, interfaces
+}
+
+func (p *PPP) parseSecrets(rows []routeros.Reply) []PPPSecret {
+	secrets := make([]PPPSecret, 0, len(rows))
+	for _, r := range rows {
 		if r["name"] == "" {
 			continue
 		}
@@ -406,11 +445,74 @@ func (p *PPP) loadConfig() {
 			Disabled: boolOf(r["disabled"]),
 		})
 	}
-	// The same ordering the sessions table uses for a name column.
 	sort.SliceStable(secrets, func(i, j int) bool {
 		return Collate(secrets[i].Name, secrets[j].Name) < 0
 	})
-	p.profiles, p.servers, p.secrets = profiles, servers, secrets
+	return secrets
+}
+
+// absorb receives streamed accounts from pppSecretCmd.
+func (p *PPP) absorb(_ int, rows []routeros.Reply, err error) (*PPPPayload, string) {
+	if err != nil && !menuGone(err) {
+		return nil, ""
+	}
+	latchMenu(&p.secretAvail, err)
+	if err != nil {
+		rows = nil
+	}
+	p.secrets = p.parseSecrets(rows)
+	return p.build(p.lastActiveRows)
+}
+
+// enrichSessionBytes maps dynamic interface byte counters to active PPP sessions
+// when RouterOS v7 omits bytes-in / bytes-out from /ppp/active.
+func (p *PPP) enrichSessionBytes(rows []routeros.Reply) {
+	if len(rows) == 0 {
+		return
+	}
+	ifRows, err := p.readShared(pppIfBytesCmd)
+	if err != nil || len(ifRows) == 0 {
+		return
+	}
+	ifBytes := make(map[string][2]int, len(ifRows))
+	for _, ir := range ifRows {
+		name := ir["name"]
+		if name == "" {
+			continue
+		}
+		rx := pppInt(ir["rx-byte"])
+		tx := pppInt(ir["tx-byte"])
+		ifBytes[name] = [2]int{rx, tx}
+	}
+	userToIf := make(map[string]string, len(p.interfaces))
+	for _, iface := range p.interfaces {
+		if iface.User != "" && iface.Name != "" {
+			userToIf[iface.User] = iface.Name
+		}
+	}
+	for _, r := range rows {
+		name := r["name"]
+		if name == "" {
+			continue
+		}
+		rxStr := r["bytes-in"]
+		txStr := r["bytes-out"]
+		if rxStr != "" && txStr != "" && (rxStr != "0" || txStr != "0") {
+			continue
+		}
+		ifaceName := userToIf[name]
+		if ifaceName == "" {
+			svc := strings.ToLower(r["service"])
+			if svc == "" {
+				svc = "pppoe"
+			}
+			ifaceName = "<" + svc + "-" + name + ">"
+		}
+		if b, ok := ifBytes[ifaceName]; ok {
+			r["bytes-in"] = strconv.Itoa(b[0])
+			r["bytes-out"] = strconv.Itoa(b[1])
+		}
+	}
 }
 
 // derive is the live sessions, with the config tables on the slow lane. An
@@ -428,6 +530,8 @@ func (p *PPP) derive(rows []routeros.Reply, err error, slow bool) (*PPPPayload, 
 	if slow {
 		p.loadConfig()
 	}
+	p.enrichSessionBytes(rows)
+	p.lastActiveRows = rows
 	return p.build(rows)
 }
 
@@ -437,7 +541,8 @@ func (p *PPP) send(pl PPPPayload) { EvPppUpdate.Emit(p.emit, pppRooms.Join(), pl
 // back may be a different build.
 func (p *PPP) reset() {
 	clear(p.prev)
-	p.activeAvail, p.profileAvail, p.serverAvail, p.secretAvail = nil, nil, nil, nil
+	p.activeAvail, p.profileAvail, p.serverAvail, p.interfaceAvail, p.secretAvail = nil, nil, nil, nil, nil
+	p.lastActiveRows = nil
 }
 
 // PPPInput is one tick's worth of the outside world, for BuildPPP.
@@ -453,10 +558,11 @@ type PPPInput struct {
 	// Prev is the previous counter reading per session, which is what makes a
 	// RATE possible: a rate is a difference, and a function of the current rows
 	// alone has nothing to subtract from. Same shape as `BuildBandwidth(prev, in)`.
-	Prev     map[string]pppSample
-	Secrets  []PPPSecret
-	Profiles []PPPProfile
-	Servers  []PPPServer
+	Prev       map[string]pppSample
+	Secrets    []PPPSecret
+	Profiles   []PPPProfile
+	Servers    []PPPServer
+	Interfaces []PPPoEInterface
 	// Available is the active-menu presence latch; nil means not yet known,
 	// which reads as available.
 	Available *bool
@@ -518,10 +624,16 @@ func BuildPPP(in PPPInput) (*PPPPayload, []PPPSession, map[string]pppSample) {
 		secrets[i] = s
 	}
 
+	interfaces := in.Interfaces
+	if interfaces == nil {
+		interfaces = []PPPoEInterface{}
+	}
+
 	return &PPPPayload{
 		TS: in.Now.UnixMilli(), PollMs: in.PollMs,
 		Sessions: sessions, Secrets: secrets, Profiles: in.Profiles, Servers: in.Servers,
-		ByService: byService, TotalRXRate: totalRX, TotalTXRate: totalTX,
+		Interfaces: interfaces,
+		ByService:  byService, TotalRXRate: totalRX, TotalTXRate: totalTX,
 		Available: MenuAvailable(in.Available),
 	}, sessions, nextPrev
 }
@@ -531,7 +643,8 @@ func (p *PPP) build(rows []routeros.Reply) (*PPPPayload, string) {
 	payload, sessions, nextPrev := BuildPPP(PPPInput{
 		Rows: rows, Prev: p.prev,
 		Secrets: p.secrets, Profiles: p.profiles, Servers: p.servers,
-		Available: p.activeAvail, PollMs: p.pollMs.ms(), Now: time.Now(),
+		Interfaces: p.interfaces,
+		Available:  p.activeAvail, PollMs: p.pollMs.ms(), Now: time.Now(),
 	})
 	// THE CARRIED STATE COMES BACK rather than having been written through the
 	// argument. See ParsePPPSessions.
@@ -561,8 +674,12 @@ func (p *PPP) build(rows []routeros.Reply) (*PPPPayload, string) {
 			pr.Encryption + ";")
 	}
 	for _, sv := range p.servers {
-		fp.WriteString(sv.ServiceName + "|" + sv.Interface + "|" +
+		fp.WriteString(sv.ID + "|" + sv.ServiceName + "|" + sv.Interface + "|" +
 			sv.MaxSessions + "|" + sv.Auth + "|" + strconv.FormatBool(sv.Disabled) + ";")
+	}
+	for _, iface := range payload.Interfaces {
+		fp.WriteString(iface.ID + "|" + iface.Name + "|" + iface.User + "|" +
+			strconv.FormatBool(iface.Running) + "|" + strconv.FormatBool(iface.Disabled) + ";")
 	}
 	fp.WriteString("|" + strconv.FormatBool(payload.Available))
 	return payload, fp.String()

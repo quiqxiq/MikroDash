@@ -46,6 +46,7 @@ func TestScheduledCollectorsAreDeclared(t *testing.T) {
 		"netwatch.go":     "netwatch",
 		"talkers.go":      "talkers",
 		"dns.go":          "dns",
+		"hotspot.go":      "hotspot",
 		"packages.go":     "packages",
 		"rosusers.go":     "rosusers",
 		"queues.go":       "queues",

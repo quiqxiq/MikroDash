@@ -1,0 +1,233 @@
+  <div class="page-view" id="page-hotspot">
+    <div class="container-fluid px-0" style="width:100%">
+
+      <div class="wl-summary-row wl-summary-row-4" style="grid-template-columns:repeat(auto-fit, minmax(130px, 1fr))">
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Active Sessions</div>
+          <div class="fa-stat-val" id="hsSumActive" style="color:var(--accent-ok)">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Configured Users</div>
+          <div class="fa-stat-val" id="hsSumUsers">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Inactive Users</div>
+          <div class="fa-stat-val" id="hsSumInactive" style="color:var(--text-muted)">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Active Hosts</div>
+          <div class="fa-stat-val" id="hsSumHosts">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Download</div>
+          <div class="fa-stat-val" id="hsSumRx">-</div>
+        </div>
+        <div class="wl-summary-card">
+          <div class="wl-summary-title">Upload</div>
+          <div class="fa-stat-val" id="hsSumTx">-</div>
+        </div>
+      </div>
+
+      <div class="card" id="hotspotCard" style="margin-top:.85rem">
+        <div class="stale-overlay">&#9679; stale</div>
+        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <h3 class="card-title mb-0">HotSpot</h3>
+            <span id="hsBadge" class="card-badge">0</span>
+          </div>
+          <div class="stab-bar rttab-bar" id="hsTabBar" role="tablist" aria-label="HotSpot tabs">
+            <button class="stab active" data-hstab="users" role="tab" aria-selected="true"
+                    aria-controls="hstab-users" id="hsTabBtn-users">Users <span id="hsUsersBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="active" role="tab" aria-selected="false"
+                    aria-controls="hstab-active" id="hsTabBtn-active">Active <span id="hsActiveBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="inactive" role="tab" aria-selected="false"
+                    aria-controls="hstab-inactive" id="hsTabBtn-inactive">Inactive <span id="hsInactiveBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="userProfiles" role="tab" aria-selected="false"
+                    aria-controls="hstab-userProfiles" id="hsTabBtn-userProfiles">User Profiles <span id="hsUserProfilesBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="servers" role="tab" aria-selected="false"
+                    aria-controls="hstab-servers" id="hsTabBtn-servers">Servers <span id="hsServersBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="serverProfiles" role="tab" aria-selected="false"
+                    aria-controls="hstab-serverProfiles" id="hsTabBtn-serverProfiles">Server Profiles <span id="hsServerProfilesBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="hosts" role="tab" aria-selected="false"
+                    aria-controls="hstab-hosts" id="hsTabBtn-hosts">Hosts <span id="hsHostsBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="ipBinding" role="tab" aria-selected="false"
+                    aria-controls="hstab-ipBinding" id="hsTabBtn-ipBinding">IP Binding <span id="hsIPBindingBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="walledGarden" role="tab" aria-selected="false"
+                    aria-controls="hstab-walledGarden" id="hsTabBtn-walledGarden">Walled Garden <span id="hsWalledGardenBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+            <button class="stab" data-hstab="cookies" role="tab" aria-selected="false"
+                    aria-controls="hstab-cookies" id="hsTabBtn-cookies">Cookies <span id="hsCookiesBadge" class="card-badge" style="margin-left:.3rem">0</span></button>
+          </div>
+          <div class="hdr-actions">
+            <input id="hsSearch" class="sform-input sform-sm"
+                   placeholder="Search hotspot&hellip;" style="flex:0 1 240px;width:240px"/>
+            <span id="hsAddSlot" data-res-add="hotspotUser"
+                  data-res-add-dynamic="hotspotUser,hotspotUserProfile,hotspotServer,hotspotServerProfile,hotspotIPBinding,hotspotWalledGarden,hotspotWalledGardenIP"></span>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+
+          <!-- TAB 1: USERS -->
+          <div class="capstab-panel" id="hstab-users" role="tabpanel" aria-labelledby="hsTabBtn-users">
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:860px">
+                <colgroup>
+                  <col style="width:10%"><col style="width:18%"><col style="width:14%"><col style="width:14%">
+                  <col style="width:14%"><col style="width:14%"><col style="width:16%">
+                </colgroup>
+                <thead><tr id="hsUsersThead"></tr></thead>
+                <tbody id="hsUsersTable" data-res-rows="hotspotUser">
+                  <tr><td colspan="7" class="empty-state">Waiting for HotSpot users&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 2: ACTIVE SESSIONS -->
+          <div class="capstab-panel" id="hstab-active" role="tabpanel" aria-labelledby="hsTabBtn-active" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:960px">
+                <colgroup>
+                  <col style="width:15%"><col style="width:11%"><col style="width:13%"><col style="width:15%">
+                  <col style="width:10%"><col style="width:10%"><col style="width:13%"><col style="width:13%">
+                </colgroup>
+                <thead><tr id="hsActiveThead"></tr></thead>
+                <tbody id="hsActiveTable" data-res-rows="hotspotActive">
+                  <tr><td colspan="8" class="empty-state">Waiting for active HotSpot sessions&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 3: INACTIVE USERS -->
+          <div class="capstab-panel" id="hstab-inactive" role="tabpanel" aria-labelledby="hsTabBtn-inactive" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:860px">
+                <colgroup>
+                  <col style="width:10%"><col style="width:18%"><col style="width:14%"><col style="width:14%">
+                  <col style="width:14%"><col style="width:14%"><col style="width:16%">
+                </colgroup>
+                <thead><tr id="hsInactiveThead"></tr></thead>
+                <tbody id="hsInactiveTable" data-res-rows="hotspotUser">
+                  <tr><td colspan="7" class="empty-state">No inactive HotSpot users.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 4: USER PROFILES -->
+          <div class="capstab-panel" id="hstab-userProfiles" role="tabpanel" aria-labelledby="hsTabBtn-userProfiles" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:750px">
+                <colgroup>
+                  <col style="width:22%"><col style="width:13%"><col style="width:18%"><col style="width:16%">
+                  <col style="width:15%"><col style="width:16%">
+                </colgroup>
+                <thead><tr id="hsUserProfilesThead"></tr></thead>
+                <tbody id="hsUserProfilesTable" data-res-rows="hotspotUserProfile">
+                  <tr><td colspan="6" class="empty-state">Waiting for user profiles&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 5: SERVERS -->
+          <div class="capstab-panel" id="hstab-servers" role="tabpanel" aria-labelledby="hsTabBtn-servers" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:750px">
+                <colgroup>
+                  <col style="width:20%"><col style="width:18%"><col style="width:18%"><col style="width:18%">
+                  <col style="width:14%"><col style="width:12%">
+                </colgroup>
+                <thead><tr id="hsServersThead"></tr></thead>
+                <tbody id="hsServersTable" data-res-rows="hotspotServer">
+                  <tr><td colspan="6" class="empty-state">Waiting for HotSpot servers&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 6: SERVER PROFILES -->
+          <div class="capstab-panel" id="hstab-serverProfiles" role="tabpanel" aria-labelledby="hsTabBtn-serverProfiles" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:750px">
+                <colgroup>
+                  <col style="width:20%"><col style="width:18%"><col style="width:18%"><col style="width:16%">
+                  <col style="width:16%"><col style="width:12%">
+                </colgroup>
+                <thead><tr id="hsServerProfilesThead"></tr></thead>
+                <tbody id="hsServerProfilesTable" data-res-rows="hotspotServerProfile">
+                  <tr><td colspan="6" class="empty-state">Waiting for server profiles&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 7: HOSTS -->
+          <div class="capstab-panel" id="hstab-hosts" role="tabpanel" aria-labelledby="hsTabBtn-hosts" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:850px">
+                <colgroup>
+                  <col style="width:18%"><col style="width:16%"><col style="width:16%"><col style="width:14%">
+                  <col style="width:12%"><col style="width:12%"><col style="width:12%">
+                </colgroup>
+                <thead><tr id="hsHostsThead"></tr></thead>
+                <tbody id="hsHostsTable" data-res-rows="hotspotHost">
+                  <tr><td colspan="7" class="empty-state">Waiting for HotSpot hosts&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 8: IP BINDING -->
+          <div class="capstab-panel" id="hstab-ipBinding" role="tabpanel" aria-labelledby="hsTabBtn-ipBinding" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:800px">
+                <colgroup>
+                  <col style="width:18%"><col style="width:16%"><col style="width:16%"><col style="width:14%">
+                  <col style="width:12%"><col style="width:14%"><col style="width:10%">
+                </colgroup>
+                <thead><tr id="hsIPBindingThead"></tr></thead>
+                <tbody id="hsIPBindingTable" data-res-rows="hotspotIPBinding">
+                  <tr><td colspan="7" class="empty-state">Waiting for IP bindings&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 9: WALLED GARDEN -->
+          <div class="capstab-panel" id="hstab-walledGarden" role="tabpanel" aria-labelledby="hsTabBtn-walledGarden" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:800px">
+                <colgroup>
+                  <col style="width:10%"><col style="width:14%"><col style="width:24%"><col style="width:10%">
+                  <col style="width:16%"><col style="width:16%"><col style="width:10%">
+                </colgroup>
+                <thead><tr id="hsWalledGardenThead"></tr></thead>
+                <tbody id="hsWalledGardenTable" data-res-rows="hotspotWalledGarden">
+                  <tr><td colspan="7" class="empty-state">Waiting for Walled Garden entries&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 10: COOKIES -->
+          <div class="capstab-panel" id="hstab-cookies" role="tabpanel" aria-labelledby="hsTabBtn-cookies" hidden>
+            <div class="data-scroll" style="max-height:calc(100vh - 350px);overflow-y:auto">
+              <table class="table table-vcenter mb-0" style="table-layout:fixed;width:100%;min-width:650px">
+                <colgroup>
+                  <col style="width:26%"><col style="width:26%"><col style="width:24%"><col style="width:24%">
+                </colgroup>
+                <thead><tr id="hsCookiesThead"></tr></thead>
+                <tbody id="hsCookiesTable" data-res-rows="hotspotCookie">
+                  <tr><td colspan="4" class="empty-state">Waiting for HotSpot cookies&hellip;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>

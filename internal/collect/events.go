@@ -29,6 +29,7 @@ var (
 	EvConnList       = hub.Declare[ConnListPayload]("conn:list")
 	EvDnsUpdate      = hub.Declare[DNSPayload]("dns:update")
 	EvFirewallUpdate = hub.Declare[FirewallPayload]("firewall:update")
+	EvHotspotUpdate  = hub.Declare[HotspotPayload]("hotspot:update")
 	EvIfstatusUpdate = hub.Declare[IfStatusPayload]("ifstatus:update")
 	EvIfstatusNames  = hub.Declare[IfNamesPayload]("ifstatus:names")
 	EvLanOverview    = hub.Declare[LanPayload]("lan:overview")

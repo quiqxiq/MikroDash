@@ -327,6 +327,22 @@
       "sessionProp": "areas"
     },
     {
+      "key": "hotspot",
+      "label": "HotSpot",
+      "pollKey": null,
+      "defaultPollMs": 1000,
+      "streamKey": "streamHotspot",
+      "pollable": true,
+      "disableable": true,
+      "requires": [],
+      "emptyKey": [
+        "active",
+        "users",
+        "servers"
+      ],
+      "sessionProp": "hotspot"
+    },
+    {
       "key": "packages",
       "label": "Packages",
       "pollKey": "pollPackages",
